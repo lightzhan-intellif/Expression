@@ -61,7 +61,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 
 	//下面进行转换
 	//申明算法中的输出
-	char **temp_out=(char**)malloc(sizeof(char*)*sizeof(infixExpression));
+	char **temp_out=(char**)malloc(sizeof(char*)*strlen(infixExpression));//sizeof is gou si
 	if (NULL==temp_out)
 	{
 		/* code */
@@ -117,6 +117,10 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 							*(temp_out+temp_out_index)=temp_stackdata->data;//因为已经弹出,
 							// temp_stackdata=(stackdata*)malloc(sizeof(stackdata));
 							temp_out_index++;
+						}
+						else
+						{
+							printf("stack has error char:%c\n",*(temp_stackdata->data));
 						}
 					}
 					else//没有数据,说明栈空,直接压栈
