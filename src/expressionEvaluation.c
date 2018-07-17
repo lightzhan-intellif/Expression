@@ -4,6 +4,7 @@
 int infixToPostfix(char *infixExpression, char postfixExpression[])
 {
 	//申请二维数组,用于切割开多位数,flatten一行一组字符
+// #define data data->pchar
 	char **flatten_input=(char**)malloc(sizeof(char*)*strlen(infixExpression));//申请中间存储空间
 	if(NULL==flatten_input)
 	{
@@ -206,7 +207,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 		*(temp_out+temp_out_index)=temp_stackdata->data;
 		temp_out_index++;
 	}
-	// free(temp_stackdata);
+	free(temp_stackdata);
 
 	// 下面把temp_out里面的数据进行拉直输出
 	int postfixExpression_index=0;
@@ -220,10 +221,175 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 		postfixExpression[postfixExpression_index]=' ';
 		postfixExpression_index++; 
 	}
+	postfixExpression[postfixExpression_index-1]='\0';
+	// free memory
+	for (int i = 0; i < strlen(infixExpression); ++i)
+	{
+		free(*(temp_out+i));
+	}
 	return true;
+}
+int getNext(char* postfixExpression,int * index,double* res)
+{
+/*
+return value:0--- number
+			1--- +
+			2--- -
+			3--- *
+			4--- /
+*/
+	*res=0;
+	if ('+'==postfixExpression[*index])
+	{
+		/* code */
+		*index+=2;
+		return 1; 
+	}
+	else if ('-'==postfixExpression[*index])
+	{
+		/* code */
+		*index+=2;
+		return 2;
+	}
+	else if ('*'==postfixExpression[*index])
+	{
+		/* code */
+		*index+=2;
+		return 3;
+	}
+	else if ('/'==postfixExpression[*index])
+	{
+		/* code */
+		*index+=2;
+		return 4;
+	}
+	else if (postfixExpression[*index]>='0'&&postfixExpression[*index]<='9')
+	{
+		/* code */
+		for (int i = *index; i < strlen(postfixExpression); ++i)
+		{
+			/* code */
+			if (' '==postfixExpression[i])
+			{
+				/* code */
+				*index=i+1;
+				return 0;
+			}
+			*res*=10;
+			*res+=postfixExpression[i]-'0';
+		}
+		//end all
+		*index=strlen(postfixExpression);
+		return 0;
+	}
+	else
+		printf("there is char i can not recognise!:%c\n",postfixExpression[*index]);
+
+
 }
 //计算后缀的值
 int computeValueFromPostfix(char *postfixExpression, double *value)
 {
+	int postfixExpression_index=0;
+	double str2int=0;
+	int res=-1;
+	stackdata* stack=NULL;
+	int stack_size=100;
+	while(true)
+	{
+		str2int=0;
+		res=-1;
+		res=getNext(postfixExpression,&postfixExpression_index,&str2int);
+		if (0==res)
+		{
+			// push it to stack
+			double *new=(stackdata*)malloc(sizeof(double));
+			*new=str2int;
+			if (NULL==stack)
+			{
+				stack=stack_array_init((char*)new,stack_size);
+			}
+			else
+				stack=stack_array_push(stack,(char*)new,&stack_size);
+		}
+		else if (1==res)
+		{
+			// get two number from stack to cal
+			double num_one=0;
+			double num_two=0;
+			stackdata *temp_one=(stackdata*)malloc(sizeof(stackdata));
+			stackdata *temp_two=(stackdata*)malloc(sizeof(stackdata));
+			stack=stack_array_pop(stack,temp_one);
+			stack=stack_array_pop(stack,temp_two);
+			num_one=*(double*)(temp_one->data);
+			num_two=*(double*)(temp_two->data);
+			free(temp_one);
+			free(temp_two);
+			double *cal=(double*)malloc(sizeof(double));
+			*cal=num_one+num_two;
+			stack=stack_array_push(stack,(char*)cal,&stack_size);
 
+		}
+		else if (2==res)
+		{
+			/* code */
+			double num_one=0;
+			double num_two=0;
+			stackdata *temp_one=(stackdata*)malloc(sizeof(stackdata));
+			stackdata *temp_two=(stackdata*)malloc(sizeof(stackdata));
+			stack=stack_array_pop(stack,temp_one);
+			stack=stack_array_pop(stack,temp_two);
+			num_one=*(double*)(temp_one->data);
+			num_two=*(double*)(temp_two->data);
+			free(temp_one);
+			free(temp_two);
+			double *cal=(double*)malloc(sizeof(double));
+			*cal=num_two-num_one;
+			stack=stack_array_push(stack,(char*)cal,&stack_size);
+		}
+		else if (3==res)
+		{
+			/* code */
+			double num_one=0;
+			double num_two=0;
+			stackdata *temp_one=(stackdata*)malloc(sizeof(stackdata));
+			stackdata *temp_two=(stackdata*)malloc(sizeof(stackdata));
+			stack=stack_array_pop(stack,temp_one);
+			stack=stack_array_pop(stack,temp_two);
+			num_one=*(double*)(temp_one->data);
+			num_two=*(double*)(temp_two->data);
+			free(temp_one);
+			free(temp_two);
+			double *cal=(double*)malloc(sizeof(double));
+			*cal=(double)num_one*num_two;
+			stack=stack_array_push(stack,(char*)cal,&stack_size);
+		}
+		else if (4==res)
+		{
+			/* code */
+			double num_one=0;
+			double num_two=0;
+			stackdata *temp_one=(stackdata*)malloc(sizeof(stackdata));
+			stackdata *temp_two=(stackdata*)malloc(sizeof(stackdata));
+			stack=stack_array_pop(stack,temp_one);
+			stack=stack_array_pop(stack,temp_two);
+			num_one=*(double*)(temp_one->data);
+			num_two=*(double*)(temp_two->data);
+			free(temp_one);
+			free(temp_two);
+			double *cal=(double*)malloc(sizeof(double));
+			*cal=(double)num_two/num_one;
+			stack=stack_array_push(stack,(char*)cal,&stack_size);
+		}
+		else
+			printf("wrong return value\n");
+		if (strlen(postfixExpression)<=postfixExpression_index)
+		{
+			/* code */
+			stackdata *temp=(stackdata*)malloc(sizeof(stackdata));
+			stack=stack_array_pop(stack,(char*)temp);
+			*value=*(double*)(temp->data);
+			return true;
+		}
+	}
 }
