@@ -8,7 +8,7 @@
 
 #include "expressionEvaluation.h"
 
-#define testNumbers 4
+#define testNumbers 5
 #define infixLength 100
 
 int main(int argc, const char * argv[]) {
@@ -16,7 +16,8 @@ int main(int argc, const char * argv[]) {
         "23+(58-41+33-25*8/4/2*12/3)/(49+1)",
         "2-(5+5*4+3*2-1)/(27+3*1)",
         "4*3+(10*4+6*2+8)/(52-2+10)-2",
-        "3/2"
+        "3/2",
+        "(3+2)*5"
     };
     
     char postfixExpression[infixLength];

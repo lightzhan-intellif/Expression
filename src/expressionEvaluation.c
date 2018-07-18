@@ -223,7 +223,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 	// free memory
 	for (int i = 0; i < strlen(infixExpression); ++i)
 	{
-		free(*(temp_out+i));
+		free(*(flatten_input+i));
 	}
 	return true;
 }
