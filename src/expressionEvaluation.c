@@ -4,12 +4,11 @@
 int infixToPostfix(char *infixExpression, char postfixExpression[])
 {
 	//申请二维数组,用于切割开多位数,flatten一行一组字符
-// #define data data->pchar
 	char **flatten_input=(char**)malloc(sizeof(char*)*strlen(infixExpression));//申请中间存储空间
 	if(NULL==flatten_input)
 	{
 		printf("memory malloc failed!\n");
-		return NULL;
+		return 0;
 	}
 	for (int i = 0; i < strlen(infixExpression); ++i)
 	{
@@ -56,18 +55,18 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 		{
 			printf("there is char which i can not recognise!\n");
 			printf("%c\n", infixExpression[i]);
-			return NULL;
+			return 0;
 		}
 	}
 
 	//下面进行转换
 	//申明算法中的输出
-	char **temp_out=(char**)malloc(sizeof(char*)*strlen(infixExpression));//sizeof is gou si
+	char **temp_out=(char**)malloc(sizeof(char*)*strlen(infixExpression));
 	if (NULL==temp_out)
 	{
 		/* code */
 		printf("memory malloc failed!\n");
-		return NULL;
+		return 0;
 	}
 	int temp_out_index=0;
 	stackdata *stack_top=NULL;//栈指针
@@ -102,7 +101,6 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 					stack_top=stack_array_pop(stack_top,temp_stackdata);
 					if (-1!=temp_stackdata->flag)//有数据弹出
 					{
-						/* code */
 						//加号减号(,压栈
 						if('+'==*(temp_stackdata->data)||'-'==*(temp_stackdata->data)||'('==*(temp_stackdata->data))
 						{
@@ -221,7 +219,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 		postfixExpression[postfixExpression_index]=' ';
 		postfixExpression_index++; 
 	}
-	postfixExpression[postfixExpression_index-1]='\0';
+	postfixExpression[postfixExpression_index-1]='\0';//回退一位，去掉最后一个空格
 	// free memory
 	for (int i = 0; i < strlen(infixExpression); ++i)
 	{
@@ -232,7 +230,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 int getNext(char* postfixExpression,int * index,double* res)
 {
 /*
-return value:0--- number
+return value:		0--- number
 			1--- +
 			2--- -
 			3--- *
@@ -241,37 +239,30 @@ return value:0--- number
 	*res=0;
 	if ('+'==postfixExpression[*index])
 	{
-		/* code */
 		*index+=2;
 		return 1; 
 	}
 	else if ('-'==postfixExpression[*index])
 	{
-		/* code */
 		*index+=2;
 		return 2;
 	}
 	else if ('*'==postfixExpression[*index])
 	{
-		/* code */
 		*index+=2;
 		return 3;
 	}
 	else if ('/'==postfixExpression[*index])
 	{
-		/* code */
 		*index+=2;
 		return 4;
 	}
 	else if (postfixExpression[*index]>='0'&&postfixExpression[*index]<='9')
 	{
-		/* code */
 		for (int i = *index; i < strlen(postfixExpression); ++i)
 		{
-			/* code */
 			if (' '==postfixExpression[i])
 			{
-				/* code */
 				*index=i+1;
 				return 0;
 			}
@@ -303,7 +294,7 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 		if (0==res)
 		{
 			// push it to stack
-			double *new=(stackdata*)malloc(sizeof(double));
+			double *new=(double*)malloc(sizeof(double));//该空间要在下面进行释放，特别重要且容易忽略
 			*new=str2int;
 			if (NULL==stack)
 			{
@@ -317,12 +308,14 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 			// get two number from stack to cal
 			double num_one=0;
 			double num_two=0;
-			stackdata *temp_one=(stackdata*)malloc(sizeof(stackdata));
+			stackdata *temp_one=(stackdata*)malloc(sizeof(stackdata));//这里不应该用指针申请空间
 			stackdata *temp_two=(stackdata*)malloc(sizeof(stackdata));
 			stack=stack_array_pop(stack,temp_one);
 			stack=stack_array_pop(stack,temp_two);
 			num_one=*(double*)(temp_one->data);
 			num_two=*(double*)(temp_two->data);
+			free(temp_one->data);
+			free(temp_two->data);
 			free(temp_one);
 			free(temp_two);
 			double *cal=(double*)malloc(sizeof(double));
@@ -341,6 +334,8 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 			stack=stack_array_pop(stack,temp_two);
 			num_one=*(double*)(temp_one->data);
 			num_two=*(double*)(temp_two->data);
+			free(temp_one->data);
+			free(temp_two->data);
 			free(temp_one);
 			free(temp_two);
 			double *cal=(double*)malloc(sizeof(double));
@@ -358,6 +353,8 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 			stack=stack_array_pop(stack,temp_two);
 			num_one=*(double*)(temp_one->data);
 			num_two=*(double*)(temp_two->data);
+			free(temp_one->data);
+			free(temp_two->data);
 			free(temp_one);
 			free(temp_two);
 			double *cal=(double*)malloc(sizeof(double));
@@ -375,6 +372,8 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 			stack=stack_array_pop(stack,temp_two);
 			num_one=*(double*)(temp_one->data);
 			num_two=*(double*)(temp_two->data);
+			free(temp_one->data);
+			free(temp_two->data);
 			free(temp_one);
 			free(temp_two);
 			double *cal=(double*)malloc(sizeof(double));
@@ -385,10 +384,11 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 			printf("wrong return value\n");
 		if (strlen(postfixExpression)<=postfixExpression_index)
 		{
-			/* code */
 			stackdata *temp=(stackdata*)malloc(sizeof(stackdata));
-			stack=stack_array_pop(stack,(char*)temp);
+			stack=stack_array_pop(stack,(stackdata*)temp);
 			*value=*(double*)(temp->data);
+			free(temp->data);
+			free(temp);
 			return true;
 		}
 	}

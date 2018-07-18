@@ -22,6 +22,6 @@ stackdata *stack_array_pop(stackdata *stack,stackdata* pop);
 bool stack_array_isfull(stackdata *stack,int size);//判断栈是否已满
 bool stack_array_isempty(stackdata *stack);//判断栈是否为空
 stackdata* stack_array_enlarge(stackdata *stack,int *psize,int new_size);//size为以前的大小,new_size为新申请的空间大小
-void stack_array_printf(stackdata *stack);
-void stack_array_test();
+/*void stack_array_printf(stackdata *stack);
+void stack_array_test();*/
 #endif

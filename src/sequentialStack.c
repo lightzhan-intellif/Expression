@@ -124,7 +124,7 @@ stackdata* stack_array_enlarge(stackdata *stack,int *psize,int new_size)
 		stack+=flag;
 	return stack;
 }
-void stack_array_printf(stackdata* stack)
+/*void stack_array_printf(stackdata* stack)
 {
 	printf("stack data is:\n");
 	if (-1==stack->flag)
@@ -173,7 +173,6 @@ void stack_array_test()
 			stackdata* pop_data=(stackdata*)malloc(sizeof(stackdata));
 			if (NULL==pop_data)
 			{
-				/* code */
 				printf("memory malloc failed!\n");
 				return ;
 			}
@@ -194,23 +193,14 @@ void stack_array_test()
 			scanf("%d",&number);
 			for (int i = 0; i < number; ++i)
 			{
-				/*if(size-1<=stack->flag)
-				{
-					printf("stack is full, push %d numbers successfully\n",i);
-					break;
-				}*/
+		
 				int data=rand();
 				stack=stack_array_push(stack,data,&size);
-				/*if(size-1<=stack->flag)
-				{
-					printf("stack is full, push %d numbers successfully\n",(i+1));
-					break;
-				}*/
+			
 			}
 		}
 		else if (4==op)//批量弹出
 		{
-			/* code */
 			int number=0;
 			printf("how many numbers do you want to pop?:");
 			scanf("%d",&number);
@@ -236,7 +226,6 @@ void stack_array_test()
 		}
 		else if (5==op)//扩容
 		{
-			/* code */
 			printf("now,size is %d\n",size);
 			printf("you want to enlarge it to:?");
 			int new_size=0;
@@ -250,10 +239,8 @@ void stack_array_test()
 		}
 		else if (6==op)
 		{
-			/* code */
 			if (stack_array_isfull(stack,size))
 			{
-				/* code */
 				printf("stack is full\n");
 			}
 			else
@@ -261,10 +248,8 @@ void stack_array_test()
 		}
 		else if (7==op)
 		{
-			/* code */
 			if (stack_array_isempty(stack))
 			{
-				/* code */
 				printf("stack is empty\n");
 			}
 			else
@@ -295,4 +280,4 @@ void stack_array_test()
 		else
 			printf("choose error\n");
 	}
-}
+}*/
