@@ -38,7 +38,8 @@ int main(int argc, const char * argv[]) {
         }
         printf("----------------------------------------------------------------\n\n");
     }
-    
+	char a;
+	scanf("%c",&a);
     return 0;
 }
 

@@ -17,7 +17,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 		{
 			printf("memory malloc failed!\n");
 		}
-		memset(*(flatten_input+i),'\0',sizeof(infixExpression));//初始化便于后面拉直取长度
+		memset(*(flatten_input+i),'\0',strlen(infixExpression));//初始化便于后面拉直取长度
 	}
 	// 切割多位数
 	// char **temp=flatten_input;
