@@ -1,8 +1,13 @@
 #include "../include/expressionEvaluation.h"
 #include "../include/sequentialStack.h"
+#include "../include/check.h"
 //中缀转后缀函数
 int infixToPostfix(char *infixExpression, char postfixExpression[])
 {
+	if (!check_all(infixExpression))
+	{
+		return 0;
+	}
 	//申请二维数组,用于切割开多位数,flatten一行一组字符
 	char **flatten_input=(char**)malloc(sizeof(char*)*strlen(infixExpression));//申请中间存储空间
 	if(NULL==flatten_input)
@@ -25,6 +30,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 	int flatten_column=0;//列
 	//第一个元素赋值
 	*(*(flatten_input+flatten_row)+flatten_column)=infixExpression[0];
+	*(*(flatten_input+flatten_row)+flatten_column+1)='\0';
 	for (int i = 1; i < strlen(infixExpression); ++i)
 	{
 		//如果是数字
@@ -36,6 +42,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 				flatten_row++;//移到下一行
 				flatten_column=0;//列置0
 				*(*(flatten_input+flatten_row)+flatten_column)=infixExpression[i];
+				*(*(flatten_input+flatten_row)+flatten_column+1)='\0';
 			}
 			else
 			{
@@ -197,6 +204,10 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 	//判断栈是否为空，如果不空则弹出并且输出
 	while(true)
 	{
+		if (NULL==stack_top)
+		{
+			break;
+		}
 		stack_top=stack_array_pop(stack_top,temp_stackdata);
 		if (-1==temp_stackdata->flag)
 		{
@@ -208,6 +219,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 	free(temp_stackdata);
 
 	// 下面把temp_out里面的数据进行拉直输出
+	// memset(postfixExpression,'\0',sizeof(postfixExpression))
 	int postfixExpression_index=0;
 	for (int row = 0; row < temp_out_index; ++row)
 	{
