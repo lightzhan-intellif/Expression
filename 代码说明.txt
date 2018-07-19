@@ -1,0 +1,7 @@
+# 1.文件及文件夹说明
+src:为源文件 main.c所在文件夹
+include:头文件
+build/Debug 里面是Debug版本的程序
+build/Release Release版本的程序
+
+# 2.开发环境为VS2015，由于程序正常运行完成自行退出，所以准备了一张运行截图在同目录下
