@@ -8,7 +8,7 @@
 
 #include "expressionEvaluation.h"
 
-#define properTestNumbers 10
+#define properTestNumbers 20
 #define inproperTestNumbers 16
 #define infixLength 100
 
@@ -24,7 +24,8 @@ int main(int argc, const char * argv[]) {
         " 62 ",
         "(5)",
         " ( 62  )",
-        "23 + ( 58 - 41 +   33 - 25 * 4) / (49 + 1 )"
+        "23 + ( 58 - 41 +   33 - 25 * 4) / (49 + 1 )",
+        "23.9 + ( 58 - 41.5 +   33 - 25 * 4) / (49.8 + 1 )"
     };
     
     char improperInfixExpressions[inproperTestNumbers][infixLength]= {

@@ -34,10 +34,10 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 	for (int i = 1; i < strlen(infixExpression); ++i)
 	{
 		//如果是数字
-		if (infixExpression[i]>='0'&&infixExpression[i]<='9')
+		if ((infixExpression[i]>='0'&&infixExpression[i]<='9'))
 		{
-			//如果前一位是非数字,那么到新的一行然后再保存
-			if (infixExpression[i-1]<'0'||infixExpression[i-1]>'9')
+			//如果前一位是非数字并且非小数点,那么到新的一行然后再保存
+			if ((infixExpression[i-1]<'0'||infixExpression[i-1]>'9')&&'.'!=infixExpression[i-1])
 			{
 				flatten_row++;//移到下一行
 				flatten_column=0;//列置0
@@ -57,6 +57,18 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 			flatten_column=0;
 			flatten_row++;
 			*(*(flatten_input+flatten_row)+flatten_column)=infixExpression[i];
+		}
+		//小数点，前一位是数字字节拷贝
+		else if('.'==infixExpression[i])
+		{
+			if (infixExpression[i-1]>='0'&&infixExpression[i-1]<='9')
+			{
+				flatten_column++;//列加1；
+				*(*(flatten_input+flatten_row)+flatten_column)=infixExpression[i];
+				*(*(flatten_input+flatten_row)+flatten_column+1)='\0';
+			}
+			else
+				printf("error!\n");
 		}
 		else
 		{
