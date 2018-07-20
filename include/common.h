@@ -3,6 +3,7 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "memory.h"
+#define DEBUG_MODE 1//DEBUG模式开关标志
 #ifdef __GNUC__
 	#include "stdbool.h"
 	#include "malloc.h"

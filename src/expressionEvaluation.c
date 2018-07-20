@@ -46,6 +46,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 			{
 				flatten_column++;//列往后移但是行不动
 				*(*(flatten_input+flatten_row)+flatten_column)=infixExpression[i];
+				*(*(flatten_input+flatten_row)+flatten_column+1)='\0';
 			}
 		}
 		//如果不是数字,需要转换行
@@ -55,6 +56,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 			flatten_column=0;
 			flatten_row++;
 			*(*(flatten_input+flatten_row)+flatten_column)=infixExpression[i];
+			*(*(flatten_input+flatten_row)+flatten_column+1)='\0';
 		}
 		//小数点，前一位是数字字节拷贝
 		else if('.'==infixExpression[i])
@@ -66,13 +68,16 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 				*(*(flatten_input+flatten_row)+flatten_column+1)='\0';
 			}
 			else
-				printf("error!\n");
+			{
+				printf("character before radix error!\n");
+				return -1;
+			}
 		}
 		else
 		{
-			printf("there is char which i can not recognise!\n");
-			printf("%c\n", infixExpression[i]);
-			return 0;
+			printf("there is character which i can not recognise:%c!\n",infixExpression[i]);
+			// printf("%c\n", infixExpression[i]);
+			return -1;
 		}
 	}
 
@@ -447,7 +452,37 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 			*value=*(double*)(temp->data);
 			free(temp->data);
 			free(temp);
+			// free(stack);
+			stack=stack_array_destroy(stack,stack_size);
 			return true;
 		}
+	}
+}
+
+/*
+函数功能：测试终端，可以不停地输入数据进行测试
+函数输入:无
+函数输出：无
+*/
+void terminal_test()
+{
+	while(true)
+	{
+		char InfixExpressions[200]={0};
+		char postfixExpression[200]={0};
+		double value;
+		printf(">");
+		gets(InfixExpressions);
+		if (infixToPostfix(InfixExpressions, postfixExpression) == 1){
+            printf("The postfix expression:%s\n", postfixExpression);
+            if (computeValueFromPostfix(postfixExpression, &value) == 1)
+            printf("The value of the expression:%g\n\n", value);
+            else
+            printf("Sorry, we can't evaluate such a postfix expression.\n");
+        }
+        else{
+            printf("Sorry, we can't turn such an infix expressin to a postfix expression.\n");
+        }
+        // printf("----------------------------------------------------------------\n\n");
 	}
 }

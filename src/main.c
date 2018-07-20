@@ -9,7 +9,7 @@
 #include "expressionEvaluation.h"
 
 #define properTestNumbers 20
-#define inproperTestNumbers 16
+#define inproperTestNumbers 20
 #define infixLength 100
 
 int main(int argc, const char * argv[]) {
@@ -25,7 +25,9 @@ int main(int argc, const char * argv[]) {
         "(5)",
         " ( 62  )",
         "23 + ( 58 - 41 +   33 - 25 * 4) / (49 + 1 )",
-        "23.9 + ( 58 - 41.58 +   33 - 25 * 4) / (49.8 + 1 )"
+        "23.9 + ( 58 - 41.58 +   33 - 25 * 4) / (49.8 + 1 )",
+        "-1+8*(+3-6)*7",
+        "(-8)*(+7)"
     };
     
     char improperInfixExpressions[inproperTestNumbers][infixLength]= {
@@ -49,7 +51,10 @@ int main(int argc, const char * argv[]) {
           //illegal character
         " a ",
         " 5 + b   ",
-        " 3 x 4 + 5   "
+        " 3 x 4 + 5   ",
+
+        " 3 * (5+8)6",
+        "8(1+2)*5"
     };
     
     char postfixExpression[infixLength];
@@ -92,6 +97,10 @@ int main(int argc, const char * argv[]) {
     }
     printf("-----***   End of tests for IMPROPER prefix expressions.    ***-----\n\n\n");
     
+    // 下面是
+    #if DEBUG_MODE
+    terminal_test();
+    #endif
     return 0;
 }
 

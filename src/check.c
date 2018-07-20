@@ -76,7 +76,7 @@ int check_operation_between_two_number(char *infixExpression)
 				else if (infixExpression[j]>='0'&&infixExpression[j]<='9')
 				{
 					//非法
-					printf("no operator between numers!\n");
+					printf("lack an operator at position:%d\n",i+1);
 					return CHECK_ERROR;
 				}
 				else
@@ -134,7 +134,7 @@ int check_start(char *infixExpression)
 		char temp=infixExpression[i];
 		if ('*'==temp||'/'==temp||')'==temp)
 		{
-			printf("%c can not be the front of the expression\n",temp);
+			printf("\"%c\" can not be before the first number\n",temp);
 			return CHECK_ERROR;
 		}
 		else if (temp>='0'&&temp<='9')
@@ -149,7 +149,7 @@ int check_start(char *infixExpression)
 }
 
 /*
-函数功能：检查表达是的结尾倒数第一个数字之后是否是除了右括号而外的字符
+函数功能：检查表达式的结尾倒数第一个数字之后是否是除了右括号而外的字符
 输入：去掉空格的输入
 输出：CHECK_OK：成功通过检测
 		CHECK_ERROR：未能通过检测
@@ -168,7 +168,7 @@ int check_end(char *infixExpression)
 		}
 		else
 		{
-			printf("lack a number at end of the expression!\n");
+			printf("lack a number at position:%d\n",i+1);
 			return CHECK_ERROR;
 		}
 	}
@@ -192,7 +192,7 @@ int check_two_continuous_operator(char* infixExpression)
 		{
 			if ('*'==temp_next||'/'==temp_next||'+'==temp_next||'-'==temp_next)
 			{
-				printf("there are two continuous operator!\n");
+				printf("there are two continuous operator at position:%d\n",i);
 				return CHECK_ERROR;
 			}
 		}
@@ -296,7 +296,7 @@ int check_leftbracket_operator(char* infixExpression)
 
 /*
 检查是否存在操作符+“)”
-输入：去掉空格的输入
+输入：去掉空格的输入(经过上面函数的处理和检查)
 输出：CHECK_OK：成功通过检测
 		CHECK_ERROR：未能通过检测
  */
@@ -308,12 +308,90 @@ int check_operator_rightbracket(char *infixExpression)
 		char temp_next=infixExpression[i+1];
 		if (('+'==temp||'-'==temp||'*'==temp||'/'==temp)&&')'==temp_next)
 		{
-			printf("lack a number at situation:%d\n",i+1);
+			printf("lack a number at position:%d\n",i+1);
 			return CHECK_ERROR;
 		}
 	}
 	return CHECK_OK;
 }
+
+/*
+函数功能：检查是否存在括号加数字,如")8","8("
+输入：去掉空格的输入(经过上面函数处理和检查)
+输出：CHECK_OK：成功通过检测
+		CHECK_ERROR：未能通过检测
+*/
+int check_bracket_number(char* infixExpression)
+{
+	for (int i = 0; i < strlen(infixExpression)-1; ++i)
+	{
+		if (')'==infixExpression[i]&&'0'<=infixExpression[i+1]&&'9'>=infixExpression[i+1])
+		{
+			printf("lack an operator between right barcket and number\n");
+			return CHECK_ERROR;
+		}
+		if ('('==infixExpression[i]&&i>0&&'0'<=infixExpression[i-1]&&'9'>=infixExpression[i-1])
+		{
+			printf("lack an operator between number and left barcket\n");
+			return CHECK_ERROR;
+		}
+
+	}
+	return CHECK_OK;
+}
+
+/*
+函数功能：检查是否存在"(+","(-"有的话括号后面填0以支持负数运算,同时检查表达式是否是+ -开头的
+函数输入：去掉空格后的输入(经过上面函数的处理和检查)，以及填'0'修改后的输入
+输出：CHECK_OK：成功通过检测
+		CHECK_ERROR：未能通过检测
+*/
+int check_negative_number(char *infixExpression)
+{
+	char *temp=(char*)malloc(strlen(infixExpression)*2);
+	if (NULL==temp)
+	{
+		/* code */
+		printf("memory malloc failed!\n");
+		return CHECK_ERROR;
+	}
+	int temp_index=0;
+	for (int i = 0; i < strlen(infixExpression)-1; ++i)
+	{
+		if (0==i&&('+'==infixExpression[i]||'-'==infixExpression[i]))
+		{
+			temp[temp_index]='0';
+			temp_index++;
+		}
+		if ('('==infixExpression[i]&&('+'==infixExpression[i+1]||'-'==infixExpression[i+1]))
+		{
+			temp[temp_index]=infixExpression[i];
+			temp_index++;
+			temp[temp_index]='0';
+			temp_index++;
+			// temp[++temp_index]=infixExpression[i+1]
+		}
+		else
+		{
+			temp[temp_index]=infixExpression[i];
+			temp_index++;
+		}
+
+	}
+	temp[temp_index]=infixExpression[strlen(infixExpression)-1];
+	temp_index++;
+	temp[temp_index]='\0';
+	//拷贝
+	memset(infixExpression,'\0',strlen(temp)+1);
+	strncpy(infixExpression,temp,temp_index);
+	infixExpression[temp_index]='\0';
+	#if DEBUG_MODE
+	printf("check_negative_number function output string:\n%s\n",infixExpression);
+	#endif
+	free(temp);
+	return CHECK_OK;
+}
+
 
 /*
 函数功能：依次调用上面的函数
@@ -361,6 +439,15 @@ int check_all(char* infixExpression)
 	}
 	if (!check_operator_rightbracket(infixExpression))
 	{
+		return CHECK_ERROR;
+	}
+	if (!check_bracket_number(infixExpression))
+	{
+		return CHECK_ERROR;
+	}
+	if (!check_negative_number(infixExpression))
+	{
+		/* code */
 		return CHECK_ERROR;
 	}
 	return CHECK_OK;

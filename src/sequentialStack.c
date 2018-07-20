@@ -124,6 +124,29 @@ stackdata* stack_array_enlarge(stackdata *stack,int *psize,int new_size)
 		stack+=flag;
 	return stack;
 }
+stackdata* stack_array_destroy(stackdata *stack,int size)
+{
+	if (NULL==stack)//栈未初始化
+	{
+		return NULL;
+	}
+	while(true)
+	{
+		if (-1==stack->flag||0==stack->flag)//栈为空或者栈指针指向栈的第0个元素
+		{
+			free(stack);
+			return NULL;
+		}
+		// #if DEBUG_MODE
+		if (stack->flag>=size||stack->flag<-1)//错误情况
+		{
+			
+			printf("meet an unkown situation when destroy stack!\n");
+		}
+		// #endif
+		stack--;
+	}
+}
 /*void stack_array_printf(stackdata* stack)
 {
 	printf("stack data is:\n");
