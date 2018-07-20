@@ -4,5 +4,5 @@
 #include "../include/sequentialStack.h"
 #define CHECK_OK 1
 #define CHECK_ERROR 0
-int check_operator_rightbracket(char *infixExpression);
+int check_all(char* infixExpression);
 #endif

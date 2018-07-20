@@ -25,7 +25,7 @@ int main(int argc, const char * argv[]) {
         "(5)",
         " ( 62  )",
         "23 + ( 58 - 41 +   33 - 25 * 4) / (49 + 1 )",
-        "23.9 + ( 58 - 41.5 +   33 - 25 * 4) / (49.8 + 1 )"
+        "23.9 + ( 58 - 41.58 +   33 - 25 * 4) / (49.8 + 1 )"
     };
     
     char improperInfixExpressions[inproperTestNumbers][infixLength]= {

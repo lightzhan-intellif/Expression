@@ -1,6 +1,4 @@
 #include "../include/expressionEvaluation.h"
-#include "../include/sequentialStack.h"
-#include "../include/check.h"
 //中缀转后缀函数
 int infixToPostfix(char *infixExpression, char postfixExpression[])
 {
@@ -261,6 +259,7 @@ return value:		0--- number
 			4--- /
 */
 	*res=0;
+	int isradix=0;//是否是小数,0表示不是小数部分，大于0表示小数第几位
 	if ('+'==postfixExpression[*index])
 	{
 		*index+=2;
@@ -285,21 +284,45 @@ return value:		0--- number
 	{
 		for (int i = *index; i < strlen(postfixExpression); ++i)
 		{
-			if (' '==postfixExpression[i])
+			if (' '==postfixExpression[i])//空格结束符
 			{
 				*index=i+1;
 				return 0;
 			}
-			*res*=10;
-			*res+=postfixExpression[i]-'0';
+			else if ('.'==postfixExpression[i])//小数点
+			{
+				isradix++;
+			}
+			else if(0==isradix)//整数部分
+			{
+				*res*=10;
+				*res+=postfixExpression[i]-'0';
+			}
+			else if (0<isradix)//小数部分
+			{
+				double temp=postfixExpression[i]-'0';
+				for (int j = 0; j < isradix; ++j)
+				{
+					temp=(double)(temp)/10;
+				}
+				*res+=temp;
+				isradix++;
+			}
+			else
+			{
+				printf("number recognise failed!\n");
+				return -1;
+			}
 		}
 		//end all
 		*index=strlen(postfixExpression);
 		return 0;
 	}
 	else
+	{
 		printf("there is char i can not recognise!:%c\n",postfixExpression[*index]);
-
+		return -1;
+	}
 
 }
 //计算后缀的值
@@ -401,11 +424,22 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 			free(temp_one);
 			free(temp_two);
 			double *cal=(double*)malloc(sizeof(double));
-			*cal=(double)num_two/num_one;
-			stack=stack_array_push(stack,(char*)cal,&stack_size);
+			if(0==num_one)
+			{
+				printf("error:divide by zerro! \n");
+				return -1;
+			}
+			else
+			{
+				*cal=(double)num_two/num_one;
+				stack=stack_array_push(stack,(char*)cal,&stack_size);
+			}
 		}
 		else
+		{
 			printf("wrong return value\n");
+			return -1;
+		}
 		if (strlen(postfixExpression)<=postfixExpression_index)
 		{
 			stackdata *temp=(stackdata*)malloc(sizeof(stackdata));
