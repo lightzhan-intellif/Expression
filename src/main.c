@@ -97,9 +97,9 @@ int main(int argc, const char * argv[]) {
     }
     printf("-----***   End of tests for IMPROPER prefix expressions.    ***-----\n\n\n");
     
-    // 下面是
-    #if DEBUG_MODE
-    terminal_test();
+    // 下面是终端模式
+    #if TERMINAL_MODE
+        terminal_test();
     #endif
     return 0;
 }

@@ -1,5 +1,4 @@
 #include "../include/check.h"
-/******************************以下函数是去掉空格前的函数************************************/
 /*
 函数功能：判断是否为空表达式（除开空格）
 参数：infixExpression：未去掉空格的输入
@@ -43,7 +42,11 @@ int check_illegal_character(char *infixExpression)
 		}
 		else
 		{
-			printf("illegal character is checked:%c\n",temp);
+			#if VARIABLE_MODE
+				printf("there are illegal characters or undefined variables when calculating!\n");
+			#else
+				printf("illegal character is checked:%c\n",temp);
+			#endif
 			return CHECK_ERROR;
 		}
 	}
@@ -76,7 +79,7 @@ int check_operation_between_two_number(char *infixExpression)
 				else if (infixExpression[j]>='0'&&infixExpression[j]<='9')
 				{
 					//非法
-					printf("lack an operator at position:%d\n",i+1);
+					printf("lack operator between numbers\n");
 					return CHECK_ERROR;
 				}
 				else
@@ -168,7 +171,7 @@ int check_end(char *infixExpression)
 		}
 		else
 		{
-			printf("lack a number at position:%d\n",i+1);
+			printf("lack a number at end\n");
 			return CHECK_ERROR;
 		}
 	}
@@ -192,7 +195,7 @@ int check_two_continuous_operator(char* infixExpression)
 		{
 			if ('*'==temp_next||'/'==temp_next||'+'==temp_next||'-'==temp_next)
 			{
-				printf("there are two continuous operator at position:%d\n",i);
+				printf("there are two continuous operator!It is illegal\n");
 				return CHECK_ERROR;
 			}
 		}
@@ -288,6 +291,7 @@ int check_leftbracket_operator(char* infixExpression)
 		char temp_next=infixExpression[i+1];
 		if ('('==temp&&('*'==temp_next||'/'==temp_next))
 		{
+			printf("left barcket can not be follow by %c\n",temp_next);
 			return CHECK_ERROR;
 		}
 	}
@@ -308,7 +312,7 @@ int check_operator_rightbracket(char *infixExpression)
 		char temp_next=infixExpression[i+1];
 		if (('+'==temp||'-'==temp||'*'==temp||'/'==temp)&&')'==temp_next)
 		{
-			printf("lack a number at position:%d\n",i+1);
+			printf("lack a number behind \"%c\"%d\n",temp);
 			return CHECK_ERROR;
 		}
 	}
@@ -386,7 +390,7 @@ int check_negative_number(char *infixExpression)
 	strncpy(infixExpression,temp,temp_index);
 	infixExpression[temp_index]='\0';
 	#if DEBUG_MODE
-	printf("check_negative_number function output string:\n%s\n",infixExpression);
+	printf("check_negative_number function output string:%s\n",infixExpression);
 	#endif
 	free(temp);
 	return CHECK_OK;
@@ -399,7 +403,7 @@ int check_negative_number(char *infixExpression)
 输出：CHECK_OK：成功通过检测
 		CHECK_ERROR：未能通过检测
 */
-int check_all(char* infixExpression)
+int check_calculaion(char* infixExpression)
 {
 	if (!check_empty(infixExpression))
 	{
@@ -447,7 +451,6 @@ int check_all(char* infixExpression)
 	}
 	if (!check_negative_number(infixExpression))
 	{
-		/* code */
 		return CHECK_ERROR;
 	}
 	return CHECK_OK;

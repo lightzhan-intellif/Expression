@@ -1,11 +1,41 @@
 #include "../include/expressionEvaluation.h"
+#if VARIABLE_MODE
+	variable_collection* g_calculation_collection=NULL;//保存用于计算的变量，因为要在两个函数之间使用，所以定义成全局的
+	variable_collection* g_collection_pool=NULL;//变量池
+#endif
 //中缀转后缀函数
 int infixToPostfix(char *infixExpression, char postfixExpression[])
 {
-	if (!check_all(infixExpression))
+/***************************第1部分：对等式进行分解和对计算式进行合法性检查****************************************************/
+	#if VARIABLE_MODE  //是否开启变量
+		// 分解等式
+		//这里之所以不检查指针是因为为NULL为没有变量
+		g_calculation_collection=variable_collection_get_variable(infixExpression);
+		/*if (NULL==g_calculation_collection)
+		{
+			return 0;
+		}*/
+		//初始化变量池
+		if (NULL==g_collection_pool)
+		{
+			g_collection_pool=variable_collection_init();
+		}
+		// 右边计算表达式变量替换
+		if(0>variable_collection_replace(g_collection_pool,infixExpression))
+		{
+			#if DEBUG_MODE
+				printf("something wrong when replace variable\n");
+			#endif
+			return false;
+		}
+	#endif
+	// 计算表达式合法性检查
+	if (!check_calculaion(infixExpression))
 	{
 		return 0;
 	}
+
+/***************************第2部分：将表达式压成二维******************************************************/
 	//申请二维数组,用于切割开多位数,flatten一行一组字符
 	char **flatten_input=(char**)malloc(sizeof(char*)*strlen(infixExpression));//申请中间存储空间
 	if(NULL==flatten_input)
@@ -19,6 +49,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 		if (NULL==*(flatten_input+i))
 		{
 			printf("memory malloc failed!\n");
+			return false;
 		}
 		memset(*(flatten_input+i),'\0',strlen(infixExpression));//初始化便于后面拉直取长度
 	}
@@ -80,7 +111,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 			return -1;
 		}
 	}
-
+/*******************************第3部分:中缀到后缀转换**********************************************************/
 	//下面进行转换
 	//申明算法中的输出
 	char **temp_out=(char**)malloc(sizeof(char*)*strlen(infixExpression));
@@ -233,6 +264,7 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 	}
 	free(temp_stackdata);
 
+/****************************************第4部分:拉直输出***********************************************/
 	// 下面把temp_out里面的数据进行拉直输出
 	// memset(postfixExpression,'\0',sizeof(postfixExpression))
 	int postfixExpression_index=0;
@@ -454,6 +486,12 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 			free(temp);
 			// free(stack);
 			stack=stack_array_destroy(stack,stack_size);
+			#if VARIABLE_MODE
+				// 保存变量值
+				variable_collection_set_all_value(g_calculation_collection,*value);
+				//融合到全局变量
+				variable_collection_fuse(g_collection_pool,g_calculation_collection);
+			#endif
 			return true;
 		}
 	}
@@ -466,12 +504,28 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 */
 void terminal_test()
 {
+	printf("*******************************terminal mode*****************************************\n\n");
+	printf("created by liang zhan 2018/7\n\n");
+	#if VARIABLE_MODE
+		printf("**note**:variable mode is turned on now, you can define and use variable!\n\n");
+		printf("\tvariable:legal character:\"a\"~\"b\",\"A\"~\"B\",\"_\",\"0\"~\"9\". but can not start with numbers!\n\n");
+		printf("\tsupport the form like\"a=b=value\"\n\n");
+	#else
+		printf("**note**:variable mode is not turned on now, you can not define and use variable\n\n");
+	#endif
+	#if DEBUG_MODE
+		printf("you have turned on debug mode, you will see many debug information!\n\n");
+	#endif
+	printf("you can change mode in common.h. set VARIABLE_MODE DEBUG_MODE and so on to 0 or 1 and recompile\n\n");
+	printf("**************************************************************************************\n\n");
 	while(true)
 	{
 		char InfixExpressions[200]={0};
 		char postfixExpression[200]={0};
 		double value;
-		printf(">");
+		#if TERMINAL_MODE
+			printf(">");
+		#endif
 		gets(InfixExpressions);
 		if (infixToPostfix(InfixExpressions, postfixExpression) == 1){
             printf("The postfix expression:%s\n", postfixExpression);
@@ -483,6 +537,9 @@ void terminal_test()
         else{
             printf("Sorry, we can't turn such an infix expressin to a postfix expression.\n");
         }
+        #if VARIABLE_MODE&VARIABLE_POOL_PRINT//打印变量池
+        	variable_collection_printf(g_collection_pool);
+        #endif
         // printf("----------------------------------------------------------------\n\n");
 	}
 }
