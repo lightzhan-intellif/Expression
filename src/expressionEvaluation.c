@@ -10,11 +10,12 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 	#if VARIABLE_MODE  //是否开启变量
 		// 分解等式
 		//这里之所以不检查指针是因为为NULL为没有变量
-		g_calculation_collection=variable_collection_get_variable(infixExpression);
-		/*if (NULL==g_calculation_collection)
+		int state=0;
+		g_calculation_collection=variable_collection_get_variable(infixExpression,&state);
+		if (NULL==g_calculation_collection&&0==state)
 		{
 			return 0;
-		}*/
+		}
 		//初始化变量池
 		if (NULL==g_collection_pool)
 		{
@@ -32,6 +33,13 @@ int infixToPostfix(char *infixExpression, char postfixExpression[])
 	// 计算表达式合法性检查
 	if (!check_calculaion(infixExpression))
 	{
+		#if VARIABLE_MODE
+			//回收空间
+			if (NULL!=g_calculation_collection)
+			{
+				variable_collection_destroy(g_calculation_collection);
+			}
+		#endif
 		return 0;
 	}
 

@@ -16,7 +16,7 @@ variable_collection* variable_collection_init();
 bool variable_collection_add_variable(variable_collection* collection,variable* var);
 bool variable_collection_find(variable_collection* collection,char *name,double *value,int *index);
 bool variable_collection_delete(variable_collection *collection,char name[]);
-variable_collection* variable_collection_get_variable(char* infixExpression);
+variable_collection* variable_collection_get_variable(char* infixExpression,int* state);
 bool variable_collection_destroy(variable_collection* variable_collection);
 bool variable_collection_set_all_value(variable_collection* collection,double value);
 bool variable_collection_get_num(variable_collection *collection,int* num);

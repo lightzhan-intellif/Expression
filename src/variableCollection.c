@@ -299,13 +299,15 @@ bool variable_collection_fuse(variable_collection* collection1,variable_collecti
 }
 /*
 函数功能：得到变量(通过等号的存在判断)
-参数：infixExpress:原始输入(没有经过任何处理)
+参数：infixExpress:原始输入(没有经过任何处理) 
+		state 返回状态0 表示不能再往下计算
+					1 表示可以往下继续
 输出：返回值:存在变量----变量集合
 			不存在----NULL
 	infixExpression:不存在变量的计算表达式
 注意：可能会有多个变量在同一个等式里面，比如"a=b=1",但是我们只支持一个变量;
 */
-variable_collection* variable_collection_get_variable(char* infixExpression)
+variable_collection* variable_collection_get_variable(char* infixExpression,int* state)
 {
 	// 我们先反向寻找，切割出计算表达式
 	char *calculation_equation=(char*)malloc(strlen(infixExpression));
@@ -318,6 +320,7 @@ variable_collection* variable_collection_get_variable(char* infixExpression)
 				printf("no variable!\n");
 			#endif
 			free(calculation_equation);
+			*state=1;
 			return NULL;
 		}
 		if ('='==infixExpression[i])
@@ -345,18 +348,23 @@ variable_collection* variable_collection_get_variable(char* infixExpression)
 			variable *new_variable=variable_init(name);
 			if (NULL==new_variable)
 			{
-				// free(calculation_equation);
+				free(calculation_equation);
 				variable_destroy(new_variable);
 				variable_collection_destroy(collection);
 				collection=NULL;
-				// return NULL;
-				break;
+				*state=0;
+				return NULL;
+				// break;
 			}
 			#if DEBUG_MODE
 				printf("I get a variable:%s\n",name);
 			#endif
 			variable_start=i+1;
-			variable_collection_add_variable(collection,new_variable);
+			if(!variable_collection_add_variable(collection,new_variable))
+			{
+				*state=0;
+				return NULL;
+			}
 		}
 	}
 	memset(infixExpression,'\0',strlen(calculation_equation)+1);
@@ -369,6 +377,7 @@ variable_collection* variable_collection_get_variable(char* infixExpression)
 	#endif
 	//free memory
 	free(calculation_equation);
+	*state=1;
 	return collection;
 }
 
@@ -398,9 +407,9 @@ int variable_collection_replace(variable_collection *collection,char* infixExpre
 	}
 	int replace_num=0;
 	//判断是否可以替换（匹配到的式一个独立变量，前后不是数字和字符以及下划线）
-	while(true)
+	for (int infixExpression_index = 0; infixExpression_index < strlen(infixExpression);)
 	{
-		char *ptr=strstr(infixExpression,var->name);
+		char *ptr=strstr(infixExpression+infixExpression_index,var->name);
 		//如果有，那么检查前后是否是空格
 		if (ptr)
 		{
@@ -421,17 +430,19 @@ int variable_collection_replace(variable_collection *collection,char* infixExpre
 				if (*ptr>='0'&&*ptr<='9'||*ptr>='a'&&*ptr<='z'||
 					*ptr>='A'&&*ptr<='Z'||'_'==*ptr) //不是变量
 				{
-					ptr++;
+					infixExpression_index++;
 					continue;
 				}
 				ptr++;
+				// infixExpression_index++;
 			}
 			// 检查字符串后面的字符
 			char* ptr_end=ptr+strlen(var->name);
 			if (*ptr_end>='0'&&*ptr_end<='9'||*ptr_end>='a'&&*ptr_end<='z'||
 					*ptr_end>='A'&&*ptr_end<='Z'||'_'==*ptr_end)//不是变量
 			{
-				;
+				// ptr++;
+				infixExpression_index++;
 			}
 			else//找到一个
 			{
@@ -470,7 +481,7 @@ void variable_collection_printf(variable_collection *collection)
 	printf("******variable pool********\n\n");
 	if (NULL==collection)
 	{
-		printf("\tno variable in collection\n");
+		printf("\tno variable\n");
 		printf("\n***************************\n\n");
 		return ;
 	}
@@ -478,7 +489,7 @@ void variable_collection_printf(variable_collection *collection)
 	variable_collection_get_num(collection,&num);
 	if (0==num)
 	{
-		printf("\tno variable in collection\n");
+		printf("\tno variable\n");
 		printf("\n***************************\n\n");
 		return ;
 	}

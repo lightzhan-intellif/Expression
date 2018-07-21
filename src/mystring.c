@@ -22,7 +22,7 @@ bool string_replace(char* dest,char* src,char* str)
 		}
 		else
 		{
-			printf("str(%s) do not have dest(%s)\n",str,dest);
+			printf("str \"%s\" do not have dest \"%s\"\n",str,dest);
 			return false;
 		}
 	}
@@ -36,7 +36,7 @@ bool string_replace(char* dest,char* src,char* str)
 	memset(str,'\0',strlen(temp)+1);
 	strcpy(str,temp);
 	#if DEBUG_MODE
-		printf("I repalce (%s) with (%s) .I get (%s)\n",dest,src,str,temp);
+		printf("I repalce \"%s\" with \"%s\" .I get \"%s\"\n",dest,src,str,temp);
 	#endif
 	return true;
 }
@@ -56,6 +56,24 @@ bool string_remove_startandend_space(char* str)
 	int start=0;//拷贝开始位置
 	int end=0;//拷贝结束指针
 	char *ptr=str;
+	// 排除只有空格的情况
+	int space_num=0;
+	for (space_num = 0; space_num < strlen(str); ++space_num)
+	{
+		if (' '!=str[space_num])
+		{
+			break;
+		}		
+	}
+	if (space_num==strlen(str))
+	{
+		#if DEBUG_MODE
+			printf("string has nothing except space!\n");
+		#endif
+		printf("you input continous \'=\'!\n");
+		str[0]='\0';
+		return false;
+	}
 	//找到开始指针
 	for (int i = 0; i < strlen(str); ++i)
 	{
@@ -77,14 +95,14 @@ bool string_remove_startandend_space(char* str)
 	if (0==start&&strlen(str)-1==end)
 	{
 		#if DEBUG_MODE
-			printf("no any space at start and end:(%s)\n",str);
+			printf("no any space at start and end:\"%s\"\n",str);
 		#endif
 		return true;
 	}
 	else
 	{
 		#if DEBUG_MODE
-			printf("remove space from (%s),", str);
+			printf("remove space from \"%s\",", str);
 		#endif
 		for (int i = 0; i < end-start+1; ++i)
 		{
@@ -92,7 +110,7 @@ bool string_remove_startandend_space(char* str)
 		}
 		str[end-start+1]='\0';
 		#if DEBUG_MODE
-			printf("get (%s)\n", str);
+			printf("get \"%s\"\n", str);
 		#endif
 		return true;
 	}
