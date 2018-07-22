@@ -509,22 +509,24 @@ int computeValueFromPostfix(char *postfixExpression, double *value)
 函数功能：测试终端，可以不停地输入数据进行测试
 函数输入:无
 函数输出：无
+注意：需要放在主函数里面
 */
+#if TERMINAL_MODE	//该函数的gets库函数会报警告
 void terminal_test()
 {
 	printf("*******************************terminal mode*****************************************\n\n");
 	printf("created by liang zhan 2018/7\n\n");
 	#if VARIABLE_MODE
-		printf("**note**:variable mode is turned on now, you can define and use variable!\n\n");
-		printf("\tvariable:legal character:\"a\"~\"b\",\"A\"~\"B\",\"_\",\"0\"~\"9\". but can not start with numbers!\n\n");
+		printf("**note**: variable mode is turned on now, you can define and use variable!\n\n");
+		printf("\tvariable: legal character:\"a\"~\"b\",\"A\"~\"B\",\"_\",\"0\"~\"9\". but can not start with numbers!\n\n");
 		printf("\tsupport the form like\"a=b=value\"\n\n");
 	#else
-		printf("**note**:variable mode is not turned on now, you can not define and use variable\n\n");
+		printf("**note**: variable mode is not turned on now, you can not define and use variable.\n\n");
 	#endif
 	#if DEBUG_MODE
-		printf("you have turned on debug mode, you will see many debug information!\n\n");
+		printf("**note**: you have turned on debug mode, you will see many debug information!\n\n");
 	#endif
-	printf("you can change mode in common.h. set VARIABLE_MODE DEBUG_MODE and so on to 0 or 1 and recompile\n\n");
+	printf("**note**: you can change mode in common.h. set VARIABLE_MODE DEBUG_MODE and so on to 0 or 1 and recompile me.\n\n");
 	printf("**************************************************************************************\n\n");
 	while(true)
 	{
@@ -551,3 +553,4 @@ void terminal_test()
         // printf("----------------------------------------------------------------\n\n");
 	}
 }
+#endif

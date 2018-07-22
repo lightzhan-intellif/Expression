@@ -70,7 +70,7 @@ bool string_remove_startandend_space(char* str)
 		#if DEBUG_MODE
 			printf("string has nothing except space!\n");
 		#endif
-		printf("you input continous \'=\'!\n");
+		// printf("you input continous \'=\'!\n");
 		str[0]='\0';
 		return false;
 	}

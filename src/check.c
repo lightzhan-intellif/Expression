@@ -171,7 +171,7 @@ int check_end(char *infixExpression)
 		}
 		else
 		{
-			printf("lack a number at end\n");
+			printf("the last \'%c\' is illegal\n",infixExpression[i]);
 			return CHECK_ERROR;
 		}
 	}
@@ -291,7 +291,7 @@ int check_leftbracket_operator(char* infixExpression)
 		char temp_next=infixExpression[i+1];
 		if ('('==temp&&('*'==temp_next||'/'==temp_next))
 		{
-			printf("left barcket can not be follow by %c\n",temp_next);
+			printf("left barcket can not be follow by \'%c\'\n",temp_next);
 			return CHECK_ERROR;
 		}
 	}
@@ -312,7 +312,7 @@ int check_operator_rightbracket(char *infixExpression)
 		char temp_next=infixExpression[i+1];
 		if (('+'==temp||'-'==temp||'*'==temp||'/'==temp)&&')'==temp_next)
 		{
-			printf("lack a number behind \"%c\"%d\n",temp);
+			printf("lack a number behind \"%c\"\n",temp);
 			return CHECK_ERROR;
 		}
 	}

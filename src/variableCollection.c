@@ -309,6 +309,21 @@ bool variable_collection_fuse(variable_collection* collection1,variable_collecti
 */
 variable_collection* variable_collection_get_variable(char* infixExpression,int* state)
 {
+	//去掉首尾的空格
+	string_remove_startandend_space(infixExpression);
+	if (0==strlen(infixExpression))
+	{
+		printf("you input nothing or only space\n");
+		*state=0;
+		return NULL;
+	}
+	// 检测第一个字符是不是等号
+	if ('='==infixExpression[0])
+	{
+		printf("\'=\' left has no variable. It is illegal!\n");
+		*state=0;
+		return NULL;
+	}
 	// 我们先反向寻找，切割出计算表达式
 	char *calculation_equation=(char*)malloc(strlen(infixExpression));
 	int variable_end=0;//变量的结束序号
@@ -334,7 +349,14 @@ variable_collection* variable_collection_get_variable(char* infixExpression,int*
 			break;
 		}
 	}
-	
+	//去掉计算式的首尾空格
+	string_remove_startandend_space(calculation_equation);
+	if (0==strlen(calculation_equation))
+	{
+		printf("no value to be calculated,please make sure you have input variable or calculation on the right of \'=\'\n");
+		*state=0;
+		return NULL;
+	}
 	// 下面切割变量
 	variable_collection* collection=variable_collection_init();
 	int variable_start=0;//下一个变量的开始点
@@ -344,7 +366,12 @@ variable_collection* variable_collection_get_variable(char* infixExpression,int*
 		if ('='==infixExpression[i])
 		{
 			strncpy(name,infixExpression+variable_start,i-variable_start);
-			string_remove_startandend_space(name);//去掉前后的空格
+			if(false==string_remove_startandend_space(name))//去掉前后的空格
+			{
+				printf("you input continous \'=\'\n");
+				*state=0;
+				return NULL;
+			}
 			variable *new_variable=variable_init(name);
 			if (NULL==new_variable)
 			{
